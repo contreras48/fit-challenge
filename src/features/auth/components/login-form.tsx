@@ -96,6 +96,11 @@ export function LoginForm() {
             {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </Button>
           <div className="text-center text-xs text-zinc-400 pt-2">
+            <Link href="/forgot-password" className="text-xs text-emerald-400 hover:underline">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
+          <div className="text-center text-xs text-zinc-400 pt-2">
             ¿No tienes una cuenta aún?{' '}
             <Link href="/register" className="text-emerald-400 hover:underline">
               Regístrate aquí
