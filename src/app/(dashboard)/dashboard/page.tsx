@@ -6,6 +6,7 @@ import { JoinChallengeForm } from '@/features/challenges/components/join-challen
 import { Button } from '@/shared/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
 import { LogoutButton } from '@/shared/components/ui/logout-button'
+import { User } from 'lucide-react'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -16,10 +17,10 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  // 1. Obtener la participación del usuario activo
+  // 1. Obtener la participación DEL USUARIO ACTIVO incluyendo 'avatar_url'
   const { data: participant } = await supabase
     .from('challenge_participants')
-    .select('*, profiles(full_name)')
+    .select('*, profiles(full_name, avatar_url)')
     .eq('user_id', user.id)
     .maybeSingle()
 
@@ -69,6 +70,9 @@ export default async function DashboardPage() {
       ? Math.min(100, Math.round((currentDifference / totalDifference) * 100))
       : 100
 
+  const fullName = participant.profiles?.full_name || 'Participante'
+  const avatarUrl = participant.profiles?.avatar_url
+
   return (
     <div className="min-h-screen bg-black text-white selection:bg-zinc-800">
       <header className="border-b border-zinc-800 bg-zinc-950/50 backdrop-blur sticky top-0 z-50">
@@ -88,13 +92,39 @@ export default async function DashboardPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Hola, {participant.profiles?.full_name || 'Participante'} 👋
-          </h1>
-          <p className="text-zinc-400 text-sm">Resumen de tu progreso en el reto actual.</p>
+        {/* Encabezado del Perfil con Foto */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            {/* Contenedor del Avatar */}
+            <div className="w-14 h-14 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center shrink-0">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={fullName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-7 h-7 text-zinc-500" />
+              )}
+            </div>
+
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">
+                Hola, {fullName} 👋
+              </h1>
+              <p className="text-zinc-400 text-sm">Resumen de tu progreso en el reto actual.</p>
+            </div>
+          </div>
+
+          {/* Enlace opcional para Editar Perfil / Cambiar Foto */}
+          <Link href="/profile">
+            <Button variant="outline" size="sm" className="border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800">
+              Editar Perfil
+            </Button>
+          </Link>
         </div>
 
+        {/* Tarjetas de Métricas */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="border-zinc-800 bg-zinc-950/40">
             <CardHeader className="p-4 pb-2">
@@ -133,6 +163,7 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
+        {/* Gráfico de Evolución */}
         <Card className="border-zinc-800 bg-zinc-950/40 p-6 space-y-4">
           <div>
             <h2 className="text-lg font-bold text-white">Evolución de Peso</h2>
