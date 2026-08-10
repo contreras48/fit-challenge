@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/shared/lib/supabase/server'
 import { LeaderboardTable } from '@/features/leaderboard/components/leaderboard-table'
 import { Button } from '@/shared/components/ui/button'
+import { ChallengeCountdown } from '@/features/challenges/components/challenge-countdown'
 
 export const revalidate = 60 // Revalida la página cada 60 segundos
 
@@ -38,6 +39,14 @@ export default async function HomePage() {
           <p className="text-zinc-400 text-base sm:text-lg text-balance">
             {challenge?.description || 'Medimos el esfuerzo real mediante el porcentaje de avance hacia la meta personal.'}
           </p>
+
+          {/* Componente del Contador Regresivo */}
+          {challenge?.end_date && (
+            <div className="pt-4 flex justify-center">
+              <ChallengeCountdown endDate={challenge.end_date} />
+            </div>
+          )}
+
         </section>
 
         {/* Seccion del Ranking */}
